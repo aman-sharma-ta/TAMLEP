@@ -14,7 +14,9 @@ The following techniques have been used:
  - Multiple sampling techinuqies are evaluated. The data set is split into train and test.
  - All the above said modelling techniques are tried and evaluated. The final metric used to evaluate is mean squared error.
 
-
+## To setup environment
+- create a new conda enviroment using env.yml conda env create ./env_name --file env.yml
+- conda activate env_name
 ## To excute the script
-create a new conda enviroment using env.yml conda env create ./env_name --file env.yml
+
 python < scriptname.py >
