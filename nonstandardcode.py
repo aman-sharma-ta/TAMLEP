@@ -1,11 +1,11 @@
-import numpy as np
-import pandas as pd
-import matplotlib as mpl
-import matplotlib.pyplot as plt
 import os
 import tarfile
-from six.moves import urllib
 
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+from six.moves import urllib
 
 DOWNLOAD_ROOT = "https://raw.githubusercontent.com/ageron/handson-ml/master/"
 HOUSING_PATH = os.path.join("datasets", "housing")
@@ -21,11 +21,13 @@ def fetch_housing_data(housing_url=HOUSING_URL, housing_path=HOUSING_PATH):
 
 import pandas as pd
 
+
 def load_housing_data(housing_path=HOUSING_PATH):
     csv_path = os.path.join(housing_path, "housing.csv")
     return pd.read_csv(csv_path)
 
-housing = load_housing_data
+fetch_housing_data()
+housing = load_housing_data()
 
 from sklearn.model_selection import train_test_split
 
@@ -73,6 +75,7 @@ housing = strat_train_set.drop("median_house_value", axis=1) # drop labels for t
 housing_labels = strat_train_set["median_house_value"].copy()
 
 from sklearn.impute import SimpleImputer
+
 imputer = SimpleImputer(strategy="median")
 
 housing_num = housing.drop('ocean_proximity', axis=1)
@@ -95,6 +98,7 @@ lin_reg = LinearRegression()
 lin_reg.fit(housing_prepared, housing_labels)
 
 from sklearn.metrics import mean_squared_error
+
 housing_predictions = lin_reg.predict(housing_prepared)
 lin_mse = mean_squared_error(housing_labels, housing_predictions)
 lin_rmse = np.sqrt(lin_mse)
@@ -102,6 +106,7 @@ lin_rmse
 
 
 from sklearn.metrics import mean_absolute_error
+
 lin_mae = mean_absolute_error(housing_labels, housing_predictions)
 lin_mae
 
@@ -117,9 +122,9 @@ tree_rmse = np.sqrt(tree_mse)
 tree_rmse
 
 
+from scipy.stats import randint
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import RandomizedSearchCV
-from scipy.stats import randint
 
 param_distribs = {
         'n_estimators': randint(low=1, high=200),
@@ -145,7 +150,7 @@ param_grid = [
   ]
 
 forest_reg = RandomForestRegressor(random_state=42)
-# train across 5 folds, that's a total of (12+6)*5=90 rounds of training 
+# train across 5 folds, that's a total of (12+6)*5=90 rounds of training
 grid_search = GridSearchCV(forest_reg, param_grid, cv=5,
                            scoring='neg_mean_squared_error', return_train_score=True)
 grid_search.fit(housing_prepared, housing_labels)
