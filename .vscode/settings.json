@@ -1,16 +1,23 @@
 {
     "files.autoSave": "onFocusChange",
     "editor.formatOnSave": true,
+    "python.linting.flake8Args": [
+        "--max-line-length=85",
+        "--ignore=E402",
+        ],
     "python.formatting.provider": "black",
     "python.formatting.blackArgs": [
-        "--line-length=119"
+        "--line-length=70"
     ],
     "isort.args":["--profile", "black"],
     "[python]": {
         "editor.codeActionsOnSave": {
             "source.organizeImports": true
         }
-    }
+    },
+    "files.trimTrailingWhitespace": true,
+"editor.tabSize": 4,
+"python.linting.flake8Enabled": true,
 }
 
 
