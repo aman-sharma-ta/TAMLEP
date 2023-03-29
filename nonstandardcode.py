@@ -7,6 +7,8 @@ import numpy as np
 import pandas as pd
 from scipy.stats import randint
 from six.moves import urllib
+from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.impute import SimpleImputer
 from sklearn.linear_model import LinearRegression
@@ -17,23 +19,19 @@ from sklearn.model_selection import (
     StratifiedShuffleSplit,
     train_test_split,
 )
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.tree import DecisionTreeRegressor
 
-feature_importances = (
-    GridSearchCV.best_estimator_.feature_importances_
-)
+feature_importances = GridSearchCV.best_estimator_.feature_importances_
 
 
-DOWNLOAD_ROOT = (
-    "https://raw.githubusercontent.com/ageron/handson-ml/master/"
-)
+DOWNLOAD_ROOT = "https://raw.githubusercontent.com/ageron/handson-ml/master/"
 HOUSING_PATH = os.path.join("datasets", "housing")
 HOUSING_URL = DOWNLOAD_ROOT + "datasets/housing/housing.tgz"
 
 
-def fetch_housing_data(
-    housing_url=HOUSING_URL, housing_path=HOUSING_PATH
-):
+def fetch_housing_data(housing_url=HOUSING_URL, housing_path=HOUSING_PATH):
     os.makedirs(housing_path, exist_ok=True)
     tgz_path = os.path.join(housing_path, "housing.tgz")
     urllib.request.urlretrieve(housing_url, tgz_path)
@@ -51,9 +49,7 @@ fetch_housing_data()
 housing = load_housing_data()
 
 
-train_set, test_set = train_test_split(
-    housing, test_size=0.2, random_state=42
-)
+train_set, test_set = train_test_split(housing, test_size=0.2, random_state=42)
 
 housing["income_cat"] = pd.cut(
     housing["median_income"],
@@ -62,12 +58,8 @@ housing["income_cat"] = pd.cut(
 )
 
 
-split = StratifiedShuffleSplit(
-    n_splits=1, test_size=0.2, random_state=42
-)
-for train_index, test_index in split.split(
-    housing, housing["income_cat"]
-):
+split = StratifiedShuffleSplit(n_splits=1, test_size=0.2, random_state=42)
+for train_index, test_index in split.split(housing, housing["income_cat"]):
     strat_train_set = housing.loc[train_index]
     strat_test_set = housing.loc[test_index]
 
@@ -76,9 +68,7 @@ def income_cat_proportions(data):
     return data["income_cat"].value_counts() / len(data)
 
 
-train_set, test_set = train_test_split(
-    housing, test_size=0.2, random_state=42
-)
+train_set, test_set = train_test_split(housing, test_size=0.2, random_state=42)
 
 compare_props = pd.DataFrame(
     {
@@ -103,9 +93,7 @@ housing.plot(kind="scatter", x="longitude", y="latitude", alpha=0.1)
 
 corr_matrix = housing.corr()
 corr_matrix["median_house_value"].sort_values(ascending=False)
-housing["rooms_per_household"] = (
-    housing["total_rooms"] / housing["households"]
-)
+housing["rooms_per_household"] = housing["total_rooms"] / housing["households"]
 housing["bedrooms_per_room"] = (
     housing["total_bedrooms"] / housing["total_rooms"]
 )
@@ -119,31 +107,85 @@ housing = strat_train_set.drop(
 housing_labels = strat_train_set["median_house_value"].copy()
 
 
-imputer = SimpleImputer(strategy="median")
+# imputer = SimpleImputer(strategy="median")
 
 housing_num = housing.drop("ocean_proximity", axis=1)
 
-imputer.fit(housing_num)
-X = imputer.transform(housing_num)
+# imputer.fit(housing_num)
+# X = imputer.transform(housing_num)
 
-housing_tr = pd.DataFrame(
-    X, columns=housing_num.columns, index=housing.index
-)
-housing_tr["rooms_per_household"] = (
-    housing_tr["total_rooms"] / housing_tr["households"]
-)
-housing_tr["bedrooms_per_room"] = (
-    housing_tr["total_bedrooms"] / housing_tr["total_rooms"]
-)
-housing_tr["population_per_household"] = (
-    housing_tr["population"] / housing_tr["households"]
-)
+# housing_tr = pd.DataFrame(
+#     X, columns=housing_num.columns, index=housing.index
+# )
+# housing_tr["rooms_per_household"] = (
+#     housing_tr["total_rooms"] / housing_tr["households"]
+# )
+# housing_tr["bedrooms_per_room"] = (
+#     housing_tr["total_bedrooms"] / housing_tr["total_rooms"]
+# )
+# housing_tr["population_per_household"] = (
+#     housing_tr["population"] / housing_tr["households"]
+# )
 
 
-housing_cat = housing[["ocean_proximity"]]
-housing_prepared = housing_tr.join(
-    pd.get_dummies(housing_cat, drop_first=True)
+# housing_cat = housing[["ocean_proximity"]]
+# housing_prepared = housing_tr.join(
+#     pd.get_dummies(housing_cat, drop_first=True)
+# )
+
+
+# column index
+rooms_ix, bedrooms_ix, population_ix, households_ix = 3, 4, 5, 6
+
+
+class CombinedAttributesAdder(BaseEstimator, TransformerMixin):
+    def __init__(self, add_bedrooms_per_room=True):  # no *args or **kargs
+        self.add_bedrooms_per_room = add_bedrooms_per_room
+
+    def fit(self, X, y=None):
+        return self  # nothing else to do
+
+    def transform(self, X):
+        rooms_per_household = X[:, rooms_ix] / X[:, households_ix]
+        population_per_household = X[:, population_ix] / X[:, households_ix]
+        if self.add_bedrooms_per_room:
+            bedrooms_per_room = X[:, bedrooms_ix] / X[:, rooms_ix]
+            return np.c_[
+                X,
+                rooms_per_household,
+                population_per_household,
+                bedrooms_per_room,
+            ]
+        else:
+            return np.c_[X, rooms_per_household, population_per_household]
+
+
+attr_adder = CombinedAttributesAdder(add_bedrooms_per_room=False)
+housing_extra_attribs = attr_adder.transform(housing.values)
+
+
+num_pipeline = Pipeline(
+    [
+        ("imputer", SimpleImputer(strategy="median")),
+        ("attribs_adder", CombinedAttributesAdder()),
+        ("std_scaler", StandardScaler()),
+    ]
 )
+
+housing_num_tr = num_pipeline.fit_transform(housing_num)
+
+
+num_attribs = list(housing_num)
+cat_attribs = ["ocean_proximity"]
+
+full_pipeline = ColumnTransformer(
+    [
+        ("num", num_pipeline, num_attribs),
+        ("cat", OneHotEncoder(), cat_attribs),
+    ]
+)
+
+housing_prepared = full_pipeline.fit_transform(housing)
 
 
 lin_reg = LinearRegression()
@@ -185,9 +227,7 @@ rnd_search = RandomizedSearchCV(
 )
 rnd_search.fit(housing_prepared, housing_labels)
 cvres = rnd_search.cv_results_
-for mean_score, params in zip(
-    cvres["mean_test_score"], cvres["params"]
-):
+for mean_score, params in zip(cvres["mean_test_score"], cvres["params"]):
     print(np.sqrt(-mean_score), params)
 
 
@@ -215,15 +255,11 @@ grid_search.fit(housing_prepared, housing_labels)
 
 grid_search.best_params_
 cvres = grid_search.cv_results_
-for mean_score, params in zip(
-    cvres["mean_test_score"], cvres["params"]
-):
+for mean_score, params in zip(cvres["mean_test_score"], cvres["params"]):
     print(np.sqrt(-mean_score), params)
 
 
-sorted(
-    zip(feature_importances, housing_prepared.columns), reverse=True
-)
+sorted(zip(feature_importances, housing_prepared.columns), reverse=True)
 
 
 final_model = grid_search.best_estimator_
@@ -232,7 +268,7 @@ X_test = strat_test_set.drop("median_house_value", axis=1)
 y_test = strat_test_set["median_house_value"].copy()
 
 X_test_num = X_test.drop("ocean_proximity", axis=1)
-X_test_prepared = imputer.transform(X_test_num)
+X_test_prepared = SimpleImputer(strategy="median").transform(X_test_num)
 X_test_prepared = pd.DataFrame(
     X_test_prepared, columns=X_test_num.columns, index=X_test.index
 )
