@@ -19,11 +19,6 @@ from sklearn.model_selection import (
 )
 from sklearn.tree import DecisionTreeRegressor
 
-feature_importances = (
-    GridSearchCV.best_estimator_.feature_importances_
-)
-
-
 DOWNLOAD_ROOT = (
     "https://raw.githubusercontent.com/ageron/handson-ml/master/"
 )
@@ -220,6 +215,9 @@ for mean_score, params in zip(
 ):
     print(np.sqrt(-mean_score), params)
 
+feature_importances = (
+    GridSearchCV.best_estimator_.feature_importances_
+)
 
 sorted(
     zip(feature_importances, housing_prepared.columns), reverse=True
