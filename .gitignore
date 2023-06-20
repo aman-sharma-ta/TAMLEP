@@ -2,3 +2,5 @@
 *.pyc
 *.tgz
 *.log
+mle-dev-tamlep/*
+__pycache__/*
