@@ -2,7 +2,7 @@ import logging
 import os
 
 
-def configure_logger(log_file=None, log_level="DEBUG"):
+def configure_logger(log_file=None, console="N", log_level="DEBUG"):
     """
     Function to setup configurations of logger through function.
 
@@ -23,13 +23,20 @@ def configure_logger(log_file=None, log_level="DEBUG"):
     """
     log_file_path = "/".join(log_file.split("/")[:-1])
     os.makedirs(log_file_path, exist_ok=True)
+
+    if console == "N":
+        handler = logging.FileHandler(log_file)
+    else:
+        handler = logging.StreamHandler()
+
     logging.basicConfig(
-        filename=log_file,
+        handlers=[handler],
         level=log_level,
         format="%(asctime)s - %(name)s - %(levelname)s\
  - %(funcName)s:%(lineno)d\
  - %(message)s",
         datefmt="%d-%m-%Y %H:%M:%S",
     )
+
     logger = logging.getLogger()
     return logger

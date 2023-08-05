@@ -1,9 +1,12 @@
+import argparse
 import os
 import tarfile
+from datetime import datetime
 
 import config
 import numpy as np
 import pandas as pd
+from logging_util import configure_logger
 from six.moves import urllib
 from sklearn.impute import SimpleImputer
 from sklearn.model_selection import train_test_split
@@ -102,9 +105,72 @@ def data_train_test_split(housing_data=None):
     test_set.to_csv(
         os.path.join(config.test_housing_path, "test.csv"), index=False
     )
+    return train_set, test_set
 
 
 if __name__ == "__main__":
-    # fetch_housing_data()
+    start = datetime.now()
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument(
+        "--log_file_path", help="Log file path", default=config.log_path
+    )
+    parser.add_argument(
+        "--log_file_name", help="Log file_name",
+        default='ingest_data.log'
+    )
+    # parser.add_argument('data_path',help='data path',
+    # default=config.housing_raw_path)
+    parser.add_argument(
+        "--train_data_path",
+        help="test data path",
+        default=config.train_housing_path,
+    )
+    parser.add_argument(
+        "--test_data_path",
+        help="test data path",
+        default=config.test_housing_path,
+    )
+    parser.add_argument(
+        "--console",
+        help="whether to output logs to console (Y/N)?",
+        default="Y",
+        choices=["Y", "N", "y", "n"],
+    )
+    parser.add_argument(
+        "--log_level",
+        help="level of logs that required",
+        default="DEBUG",
+        choices=["DEBUG", "INFO", "CRITICAL", "ERROR", "WARNING"],
+    )
+
+    args = parser.parse_args()
+
+    logger = configure_logger(
+        os.path.join(args.log_file_path, args.log_file_name),
+        args.console.upper(),
+        args.log_level
+    )
+
+    logger.info("output to console {}".format(args.console.upper()))
+    logger.info("fetching housing data from {}".format(config.housing_url))
+    fetch_housing_data()
+    logger.info("fetching data completed")
     housing = load_housing_data()
-    data_train_test_split(housing)
+    logger.info("train_data_path:{}".format(args.train_data_path))
+    logger.info("test_data_path:{}".format(args.test_data_path))
+    logger.info("fetched data size {}".format(housing.shape))
+    logger.info("starting train-test split with test size 0.2")
+    train_set, test_set = data_train_test_split(housing)
+    logger.info(
+        "completed train-test split with train_size {} and test_size {}".
+        format(
+            train_set.shape, test_set.shape
+        )
+    )
+    end = datetime.now()
+    logger.info(
+        "execution time for ingest_data script {}s".format(
+            round((end - start).seconds, 4)
+        )
+    )
