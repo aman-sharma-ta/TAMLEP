@@ -4,3 +4,4 @@
 *.log
 mle-dev-tamlep/*
 __pycache__/*
+*.pkl

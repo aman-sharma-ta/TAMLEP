@@ -13,7 +13,8 @@ from sklearn.model_selection import train_test_split
 
 
 def fetch_housing_data(
-    housing_url=config.housing_url, housing_path=config.housing_raw_path
+    housing_url=config.housing_url,
+    housing_path=config.housing_raw_path,
 ):
     """This function takes parameters housing_url and housing_path
     Downloads the data from housing_url, extracts the .tgz file and saves
@@ -54,6 +55,8 @@ def data_train_test_split(housing_data=None):
     Args:
         housing_data (dataframe, optional): csv file to process.
         Defaults to None.
+    Returns:
+        train_set,test_set
     """
     housing = housing_data.copy()
 
@@ -100,10 +103,12 @@ def data_train_test_split(housing_data=None):
     os.makedirs(config.train_housing_path, exist_ok=True)
     os.makedirs(config.test_housing_path, exist_ok=True)
     train_set.to_csv(
-        os.path.join(config.train_housing_path, "train.csv"), index=False
+        os.path.join(config.train_housing_path, "train.csv"),
+        index=False,
     )
     test_set.to_csv(
-        os.path.join(config.test_housing_path, "test.csv"), index=False
+        os.path.join(config.test_housing_path, "test.csv"),
+        index=False,
     )
     return train_set, test_set
 
@@ -113,11 +118,14 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
-        "--log_file_path", help="Log file path", default=config.log_path
+        "--log_file_path",
+        help="Log file path",
+        default=config.log_path,
     )
     parser.add_argument(
-        "--log_file_name", help="Log file_name",
-        default='ingest_data.log'
+        "--log_file_name",
+        help="Log file_name",
+        default="ingest_data.log",
     )
     # parser.add_argument('data_path',help='data path',
     # default=config.housing_raw_path)
@@ -149,11 +157,13 @@ if __name__ == "__main__":
     logger = configure_logger(
         os.path.join(args.log_file_path, args.log_file_name),
         args.console.upper(),
-        args.log_level
+        args.log_level,
     )
 
     logger.info("output to console {}".format(args.console.upper()))
-    logger.info("fetching housing data from {}".format(config.housing_url))
+    logger.info(
+        "fetching housing data from {}".format(config.housing_url)
+    )
     fetch_housing_data()
     logger.info("fetching data completed")
     housing = load_housing_data()
@@ -163,8 +173,7 @@ if __name__ == "__main__":
     logger.info("starting train-test split with test size 0.2")
     train_set, test_set = data_train_test_split(housing)
     logger.info(
-        "completed train-test split with train_size {} and test_size {}".
-        format(
+        "completed train-test split with train_size {} and test_size {}".format(
             train_set.shape, test_set.shape
         )
     )
