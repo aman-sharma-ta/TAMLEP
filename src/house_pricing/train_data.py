@@ -15,19 +15,25 @@ Ouput:
 
 import argparse
 import os
+import sys
 from datetime import datetime
 from random import randint
 
-import config
 import joblib
 
 # import numpy as np
 import pandas as pd
-from logging_util import configure_logger
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 from sklearn.tree import DecisionTreeRegressor
+
+try:
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import config
+    from logging_util import configure_logger
+except ImportError:
+    print("oh no config file")
 
 
 def train_model(

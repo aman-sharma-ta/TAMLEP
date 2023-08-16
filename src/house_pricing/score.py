@@ -12,14 +12,20 @@ Output:
 """
 import argparse
 import os
+import sys
 from datetime import datetime
 
-import config
 import joblib
 import numpy as np
 import pandas as pd
-from logging_util import configure_logger
 from sklearn.metrics import mean_absolute_error, mean_squared_error
+
+try:
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import config
+    from logging_util import configure_logger
+except ImportError:
+    print("oh no config file")
 
 
 def predict_result(model_path=None, test_data_path=None, logger=None):

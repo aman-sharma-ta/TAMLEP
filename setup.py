@@ -1,15 +1,14 @@
 import os
-import sys
-from setuptools import setup, find_packages,PEP420PackageFinder
+from setuptools import setup,PEP420PackageFinder
 
-ROOT=sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
+ROOT=os.path.dirname(os.path.abspath(__file__))
 SRC=os.path.join(ROOT,'src')
 
 with open('README.md','r') as f:
     data=f.read()
 
 setup(
-    name='house_price_model',
+    name='house_pricing',
     version='0.3',
     description='house pricing module',
     author='Aman',

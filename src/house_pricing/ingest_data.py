@@ -14,16 +14,23 @@ Input required:
 
 import argparse
 import os
+import sys
 import tarfile
 from datetime import datetime
 
-import config
 import numpy as np
 import pandas as pd
-from logging_util import configure_logger
 from six.moves import urllib
 from sklearn.impute import SimpleImputer
 from sklearn.model_selection import train_test_split
+
+try:
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import config
+    from logging_util import configure_logger
+except ImportError as e:
+    print("oh no config file",e)
+    print('sys-',sys.argv[0])
 
 
 def fetch_housing_data(

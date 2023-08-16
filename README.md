@@ -54,7 +54,7 @@ setup.py<br />
 - create a new conda enviroment using env.yml
 ```
 cd tamlep
-conda env create -f deploy/conda/env.yml
+conda env create -f env.yml
 ```
 
 ### Activate the environment created
@@ -92,7 +92,25 @@ python score.py
 **logging_util.py** - Script to configure the logger function
 **code_refactor.sh** - use to reformat any py file in isort,black and flake8 format
 
-### Logging
+## Logging
 All the log files are saved to logs/ folder
 
 
+## Installation as package
+run these commands
+```
+cd tamlep
+python setup.py sdist
+```
+Copy the path of .gz file from dist/ dir
+```
+pip install .gz_file_path
+```
+## Testing
+
+## Sphinx Documentation
+Run below commands to start the sphinx documentation in local
+```
+cd docs/build/html/
+python -m http.server 8001
+```
