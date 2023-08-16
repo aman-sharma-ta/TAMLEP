@@ -1,3 +1,17 @@
+"""
+This script download and load the raw housing
+data. preprocess it and split it in train and test
+set and save it to preprocess (train and test loc).
+
+Input required:
+    usage:
+        ingest_data.py [-h] [--log_file_path LOG_FILE_PATH]
+                            [--log_file_name LOG_FILE_NAME]
+                            [--train_data_path TRAIN_DATA_PATH]
+                            [--test_data_path TEST_DATA_PATH] [--console {Y,N,y,n}]
+                            [--log_level {DEBUG,INFO,CRITICAL,ERROR,WARNING}]
+"""
+
 import argparse
 import os
 import tarfile
@@ -16,15 +30,19 @@ def fetch_housing_data(
     housing_url=config.housing_url,
     housing_path=config.housing_raw_path,
 ):
-    """This function takes parameters housing_url and housing_path
+    """
+    This function takes parameters housing_url and housing_path
     Downloads the data from housing_url, extracts the .tgz file and saves
     it to housing_path
 
     Args:
         housing_url (str, optional):URL from which housing data is downloaded.
-        Defaults to config.housing_url.
+        Defaults: config.housing_url.
         housing_path (str, optional): output path to store the downloaded data.
-        Defaults to config.housing_raw_path.
+        Defaults: config.housing_raw_path.
+
+    Return:
+        None
     """
     os.makedirs(housing_path, exist_ok=True)
     tgz_path = os.path.join(housing_path, "housing.tgz")
@@ -35,10 +53,13 @@ def fetch_housing_data(
 
 
 def load_housing_data(housing_path=config.housing_raw_path):
-    """This function use to load the data and returns csv
+    """
+    This function use to load the data and returns csv
 
     Args:
-        housing_path (str, optional): _description_.
+        housing_path (str, optional):
+        path to housing csv file (raw)
+
         Defaults to config.housing_raw_path.
 
     Returns:
@@ -49,14 +70,15 @@ def load_housing_data(housing_path=config.housing_raw_path):
 
 
 def data_train_test_split(housing_data=None):
-    """Preprocessing of data and split into train and test dataset
+    """
+    Preprocessing of data and split into train and test dataset
     traget_variable: median_house_value
 
     Args:
         housing_data (dataframe, optional): csv file to process.
         Defaults to None.
     Returns:
-        train_set,test_set
+        train_set,test_set: Dataframes
     """
     housing = housing_data.copy()
 

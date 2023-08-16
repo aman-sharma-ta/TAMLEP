@@ -1,3 +1,13 @@
+'''
+Config.py
+--------------------------------
+
+This is a config file to store
+all static variables/locations that we need in this project.
+
+---------------------------------------
+
+'''
 import os
 
 download_root = "https://raw.githubusercontent.com/ageron/handson-ml/master/"

@@ -1,3 +1,18 @@
+"""
+This Script is utilized to train models on the
+training data available.
+
+Input:
+    usage: train_data.py [-h] [--train_data_path TRAIN_DATA_PATH]
+                     [--model_name {lr,dtr,rfr_rs,rfr_gs}]
+                     [--output_folder OUTPUT_FOLDER]
+                     [--log_file_path LOG_FILE_PATH]
+                     [--log_file_name LOG_FILE_NAME] [--console {Y,N,y,n}]
+                     [--log_level {DEBUG,INFO,CRITICAL,ERROR,WARNING}]
+Ouput:
+    trained_model(.pkl) store in artifacts/
+"""
+
 import argparse
 import os
 from datetime import datetime
@@ -15,7 +30,9 @@ from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 from sklearn.tree import DecisionTreeRegressor
 
 
-def train_model(train_data_set_path=None, model_name=None, logger=None):
+def train_model(
+    train_data_set_path=None, model_name=None, logger=None
+):
     """This function is use to train model on the data and
     returns trained_model
 
@@ -42,7 +59,9 @@ def train_model(train_data_set_path=None, model_name=None, logger=None):
     x_label = train_data.drop("median_house_value", axis=1)
 
     logger.info("train data extracted {}".format(train_data.shape))
-    logger.info("x_data {}, Y_data {}".format(x_label.shape, y_label.shape))
+    logger.info(
+        "x_data {}, Y_data {}".format(x_label.shape, y_label.shape)
+    )
     # test1
     if x_label.shape[0] == y_label.shape[0]:
         logger.info("Passed data check")
@@ -166,7 +185,7 @@ if __name__ == "__main__":
     logger = configure_logger(
         os.path.join(args.log_file_path, args.log_file_name),
         args.console.upper(),
-        args.log_level
+        args.log_level,
     )
 
     logger.info("console output : {}".format(args.console))

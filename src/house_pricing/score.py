@@ -1,3 +1,15 @@
+"""
+This script is use to predict the model evaluation on test data.
+
+Input:
+    score.py [-h] [--test_data_path TEST_DATA_PATH]
+                    [--model_folder MODEL_FOLDER] [--log_file_path LOG_FILE_PATH]
+                    [--log_file_name LOG_FILE_NAME] [--console {Y,N,y,n}]
+                    [--log_level {DEBUG,INFO,CRITICAL,ERROR,WARNING}]
+                    model_name
+Output:
+    Predicted result with true value stored in output directory
+"""
 import argparse
 import os
 from datetime import datetime
@@ -17,18 +29,18 @@ def predict_result(model_path=None, test_data_path=None, logger=None):
     Args:
         test_data_path (str, optional):
         test data set file path (.csv).
-        Defaults to None.
+        Defaults: None.
 
         model_path (str):
         trained model file.
-        Defaults to None.
+        Defaults: None.
 
         logger (log_obj):
         it will help to log data in the log_file.
-        Defaults None.
+        Defaults: None.
 
     Returns:
-        predicted_data (.csv)
+        predicted_data:Dataframe
     """
     data = pd.read_csv(test_data_path)
     y_test = data["median_house_value"]
