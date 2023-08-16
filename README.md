@@ -126,6 +126,6 @@ pytest tests/unit_tests/unit_test.py
 ## Sphinx Documentation
 Run below commands to start the sphinx documentation in local
 ```
-cd docs/build/html/
+cd docs/_build/html/
 python -m http.server 8001
 ```
