@@ -1,4 +1,6 @@
-#!/mnt/d/tamlep/mle-dev-tamlep/bin/python
+#!/bin/sh
+'''exec' /mnt/d/tamlep/mle-dev-tamlep/bin/python "$0" "$@"
+' '''
 # -*- coding: utf-8 -*-
 import re
 import sys
