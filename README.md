@@ -107,6 +107,21 @@ Copy the path of .gz file from dist/ dir
 pip install .gz_file_path
 ```
 ## Testing
+### To run all the tests
+```
+py.test tests/
+```
+
+### To run specific test
+```
+pytest tests/{test_folder_path}/{specific_test_name}.py
+```
+
+### Unit testing
+Below test can be run to perform unit testing
+```
+pytest tests/unit_tests/unit_test.py
+```
 
 ## Sphinx Documentation
 Run below commands to start the sphinx documentation in local
