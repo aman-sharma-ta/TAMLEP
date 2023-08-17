@@ -23,10 +23,14 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.tree import DecisionTreeRegressor
 
+
+DOWNLOAD_ROOT = (
+    "https://raw.githubusercontent.com/ageron/handson-ml/master/"
+)
 feature_importances = GridSearchCV.best_estimator_.feature_importances_
 
 
-DOWNLOAD_ROOT = "https://raw.githubusercontent.com/ageron/handson-ml/master/"
+
 HOUSING_PATH = os.path.join("datasets", "housing")
 HOUSING_URL = DOWNLOAD_ROOT + "datasets/housing/housing.tgz"
 
@@ -258,6 +262,9 @@ cvres = grid_search.cv_results_
 for mean_score, params in zip(cvres["mean_test_score"], cvres["params"]):
     print(np.sqrt(-mean_score), params)
 
+feature_importances = (
+    GridSearchCV.best_estimator_.feature_importances_
+)
 
 sorted(zip(feature_importances, housing_prepared.columns), reverse=True)
 

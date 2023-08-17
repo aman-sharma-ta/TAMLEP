@@ -1,3 +1,8 @@
 *.csv
 *.pyc
 *.tgz
+*.log
+mle-dev-tamlep/*
+__pycache__/*
+*.pkl
+*.egg-info
